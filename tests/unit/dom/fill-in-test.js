@@ -44,6 +44,17 @@ module('DOM Helper: fillIn', function(hooks) {
     );
   });
 
+  test('filling in a disabled element', async function(assert) {
+    element = buildInstrumentedElement('input');
+    element.setAttribute('disabled', true);
+
+    await setupContext(context);
+    assert.rejects(
+      fillIn(`#${element.id}`, 'foo'),
+      new Error('Can not `fillIn` disabled [object HTMLInputElement]')
+    );
+  });
+
   test('rejects if selector is not found', async function(assert) {
     element = buildInstrumentedElement('div');
 
