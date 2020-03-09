@@ -2,7 +2,6 @@ import getElement from './-get-element';
 import fireEvent from './fire-event';
 import { __focus__ } from './focus';
 import settled from '../settled';
-import isFocusable from './-is-focusable';
 import { nextTickPromise } from '../-utils';
 import isFormControl from './-is-form-control';
 import Target from './-target';
@@ -16,9 +15,7 @@ import { log } from '@ember/test-helpers/dom/-logging';
 export function __click__(element: Element | Document, options: MouseEventInit): void {
   fireEvent(element, 'mousedown', options);
 
-  if (isFocusable(element)) {
-    __focus__(element);
-  }
+  __focus__(element);
 
   fireEvent(element, 'mouseup', options);
   fireEvent(element, 'click', options);
@@ -82,11 +79,11 @@ export default function click(target: Target, options: MouseEventInit = {}): Pro
       throw new Error(`Element not found when calling \`click('${target}')\`.`);
     }
 
-    let isDisabledFormControl = isFormControl(element) && element.disabled;
-
-    if (!isDisabledFormControl) {
-      __click__(element, options);
+    if (isFormControl(element) && element.disabled) {
+      throw new Error(`Can not \`click\` disabled ${element}`);
     }
+
+    __click__(element, options);
 
     return settled();
   });
