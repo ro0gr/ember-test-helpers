@@ -23,12 +23,13 @@ export function __focus__(element: HTMLElement | Element | Document | SVGElement
 
   let browserIsNotFocused = document.hasFocus && !document.hasFocus();
 
+  const previousActiveElement = document.activeElement;
   if (
-    document.activeElement &&
-    document.activeElement !== element &&
-    isFocusable(document.activeElement)
+    previousActiveElement &&
+    previousActiveElement !== element &&
+    isFocusable(previousActiveElement)
   ) {
-    __blur__(document.activeElement);
+    __blur__(previousActiveElement);
   }
 
   // makes `document.activeElement` be `element`. If the browser is focused, it also fires a focus event
@@ -41,6 +42,7 @@ export function __focus__(element: HTMLElement | Element | Document | SVGElement
     // if the browser is not focused the previous `el.focus()` didn't fire an event, so we simulate it
     fireEvent(element, 'focus', {
       bubbles: false,
+      relatedTarget: previousActiveElement,
     });
 
     fireEvent(element, 'focusin');
